@@ -1,55 +1,11 @@
 #include <stdio.h>
 #include <time.h>
 
-void merge(int vetor[], int inicio, int meio, int fim) {
-    int tamanho = fim - inicio + 1;
-    int temp[tamanho];
-    int i = inicio, j = meio + 1, k = 0;
+void mergeSort(int *vetor, int tamanho);
 
-    while (i <= meio && j <= fim) {
-        if (vetor[i] <= vetor[j]) {
-            temp[k++] = vetor[i++];
-        } else {
-            temp[k++] = vetor[j++];
-        }
-    }
+void bubbleSort(int *vetor, int tamanho);
 
-    while (i <= meio) {
-        temp[k++] = vetor[i++];
-    }
-
-    while (j <= fim) {
-        temp[k++] = vetor[j++];
-    }
-
-    for (i = inicio, k = 0; i <= fim; i++, k++) {
-        vetor[i] = temp[k];
-    }
-}
-
-void mergeSort(int vetor[], int inicio, int fim) {
-    if (inicio < fim) {
-        int meio = (inicio + fim) / 2;
-
-        mergeSort(vetor, inicio, meio);
-        mergeSort(vetor, meio + 1, fim);
-        merge(vetor, inicio, meio, fim);
-    }
-}
-
-void bubbleSort(int vetor[], int tamanho) {
-    for (int i = 0; i < tamanho - 1; i++) {
-        for (int j = 0; j < tamanho - i - 1; j++) {
-            if (vetor[j] > vetor[j + 1]) {
-                int temp = vetor[j];
-                vetor[j] = vetor[j + 1];
-                vetor[j + 1] = temp;
-            }
-        }
-    }
-}
-
-void printArray(int vetor[], int tamanho) {
+void printArray(int *vetor, int tamanho) {
     for (int i = 0; i < tamanho; i++) {
         printf("%d ", vetor[i]);
     }
@@ -57,32 +13,77 @@ void printArray(int vetor[], int tamanho) {
 }
 
 int main() {
-    int vetor1[] = {12, 3, 4, 13, 9, 2, 6, 11, 5, 1, 8, 7, 10};
-    int vetor2[] = {12, 3, 4, 13, 9, 2, 6, 11, 5, 1, 8, 7, 10};
-    int tamanho = sizeof(vetor1) / sizeof(vetor1[0]);
+    int arrBubble[] = {64, 34, 25, 12, 22, 11, 90};
+    int arrMerge[] = {64, 34, 25, 12, 22, 11, 90};
+    int tamanho = sizeof(arrBubble) / sizeof(arrBubble[0]);
 
-    printf("Sequência original: ");
-    printArray(vetor1, tamanho);
+    clock_t inicio, fim;
+    double tempo_cpu;
 
-    // Teste de desempenho do Merge Sort
-    clock_t start = clock();
-    mergeSort(vetor1, 0, tamanho - 1);
-    clock_t end = clock();
-    double time_taken_merge = ((double)(end - start)) / CLOCKS_PER_SEC;
-    
-    printf("Sequência ordenada (Merge Sort): ");
-    printArray(vetor1, tamanho);
-    printf("Tempo de execução do Merge Sort: %f segundos\n", time_taken_merge);
+    // Bubble Sort
+    inicio = clock();
+    bubbleSort(arrBubble, tamanho);
+    fim = clock();
+    tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+    printf("Array ordenado com Bubble Sort: ");
+    printArray(arrBubble, tamanho);
+    printf("Tempo de execução do Bubble Sort: %f segundos\n", tempo_cpu);
 
-    // Teste de desempenho do Bubble Sort
-    start = clock();
-    bubbleSort(vetor2, tamanho);
-    end = clock();
-    double time_taken_bubble = ((double)(end - start)) / CLOCKS_PER_SEC;
-    
-    printf("Sequência ordenada (Bubble Sort): ");
-    printArray(vetor2, tamanho);
-    printf("Tempo de execução do Bubble Sort: %f segundos\n", time_taken_bubble);
+    // Merge Sort
+    inicio = clock();
+    mergeSort(arrMerge, tamanho);
+    fim = clock();
+    tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+    printf("Array ordenado com Merge Sort: ");
+    printArray(arrMerge, tamanho);
+    printf("Tempo de execução do Merge Sort: %f segundos\n", tempo_cpu);
 
     return 0;
+}
+
+void merge(int *vetor, int tamanho) {
+    int meio = tamanho / 2;
+    int i = 0, j = meio, k = 0;
+    int auxiliar[tamanho];
+    while (i < meio && j < tamanho) {
+        if (vetor[i] <= vetor[j])
+            auxiliar[k] = vetor[i++];
+        else
+            auxiliar[k] = vetor[j++];
+        k++;
+    }
+    if (i == meio) {
+        while (j < tamanho)
+            auxiliar[k++] = vetor[j++];
+    } else {
+        while (i < meio)
+            auxiliar[k++] = vetor[i++];
+    }
+    for (i = 0; i < tamanho; i++)
+        vetor[i] = auxiliar[i];
+}
+
+void mergeSort(int *vetor, int tamanho) {
+    int meio = tamanho / 2;
+    if (tamanho > 1) {
+        mergeSort(vetor, meio);
+        mergeSort(vetor + meio, tamanho - meio);
+        merge(vetor, tamanho);
+    }
+}
+
+void bubbleSort(int *vetor, int tamanho) {
+    int atual = 0;
+    int proximo = 0;
+    int auxiliar = 0;
+
+    for (atual = 1; atual < tamanho; atual++) {
+        for (proximo = 0; proximo < tamanho - 1; proximo++) {
+            if (vetor[proximo] > vetor[proximo + 1]) {
+                auxiliar = vetor[proximo];
+                vetor[proximo] = vetor[proximo + 1];
+                vetor[proximo + 1] = auxiliar;
+            }
+        }
+    }
 }
