@@ -12,7 +12,7 @@ void printArray(int *vetor, int tamanho) {
 }
 
 int main() {
-    FILE *file = fopen("resultados.txt", "w");  // Abre o arquivo para escrita
+    FILE *file = fopen("resultados.txt", "w");
     if (file == NULL) {
         printf("Erro ao abrir o arquivo!\n");
         return 1;
@@ -30,19 +30,22 @@ int main() {
     bubbleSort(arrBubble, tamanho);
     fim = clock();
     tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
-    fprintf(file, "Bubble Sort: %f\n", tempo_cpu);  // Escreve o tempo no arquivo
+    fprintf(file, "Bubble Sort: %f\n", tempo_cpu);
+    printf("Array ordenado com Bubble Sort: ");
+    printArray(arrBubble, tamanho);
 
     // Teste para Merge Sort
     inicio = clock();
     mergeSort(arrMerge, tamanho);
     fim = clock();
     tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
-    fprintf(file, "Merge Sort: %f\n", tempo_cpu);  // Escreve o tempo no arquivo
+    fprintf(file, "Merge Sort: %f\n", tempo_cpu);
+    printf("Array ordenado com Merge Sort: ");
+    printArray(arrMerge, tamanho);
 
-    fclose(file);  // Fecha o arquivo
+    fclose(file);
     return 0;
 }
-
 
 void merge(int *vetor, int tamanho) {
     int meio = tamanho / 2;
