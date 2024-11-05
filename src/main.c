@@ -2,7 +2,6 @@
 #include <time.h>
 
 void mergeSort(int *vetor, int tamanho);
-
 void bubbleSort(int *vetor, int tamanho);
 
 void printArray(int *vetor, int tamanho) {
@@ -13,6 +12,12 @@ void printArray(int *vetor, int tamanho) {
 }
 
 int main() {
+    FILE *file = fopen("resultados.txt", "w");  // Abre o arquivo para escrita
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return 1;
+    }
+
     int arrBubble[] = {64, 34, 25, 12, 22, 11, 90};
     int arrMerge[] = {64, 34, 25, 12, 22, 11, 90};
     int tamanho = sizeof(arrBubble) / sizeof(arrBubble[0]);
@@ -20,26 +25,24 @@ int main() {
     clock_t inicio, fim;
     double tempo_cpu;
 
-    // Bubble Sort
+    // Teste para Bubble Sort
     inicio = clock();
     bubbleSort(arrBubble, tamanho);
     fim = clock();
     tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
-    printf("Array ordenado com Bubble Sort: ");
-    printArray(arrBubble, tamanho);
-    printf("Tempo de execução do Bubble Sort: %f segundos\n", tempo_cpu);
+    fprintf(file, "Bubble Sort: %f\n", tempo_cpu);  // Escreve o tempo no arquivo
 
-    // Merge Sort
+    // Teste para Merge Sort
     inicio = clock();
     mergeSort(arrMerge, tamanho);
     fim = clock();
     tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
-    printf("Array ordenado com Merge Sort: ");
-    printArray(arrMerge, tamanho);
-    printf("Tempo de execução do Merge Sort: %f segundos\n", tempo_cpu);
+    fprintf(file, "Merge Sort: %f\n", tempo_cpu);  // Escreve o tempo no arquivo
 
+    fclose(file);  // Fecha o arquivo
     return 0;
 }
+
 
 void merge(int *vetor, int tamanho) {
     int meio = tamanho / 2;
