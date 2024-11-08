@@ -1,10 +1,14 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 void selectionSort(int arr[], int n);
 void insertionSort(int arr[], int n);
 void mergeSort(int *vetor, int tamanho);
 void bubbleSort(int *vetor, int tamanho);
+void heapSort(int arr[], int n);
+void quicksort(int arr[], int inicio, int fim);
+void gerarArrayAleatorio(int arr[], int n);
 
 void printArray(int *vetor, int tamanho) {
     for (int i = 0; i < tamanho; i++) {
@@ -13,41 +17,110 @@ void printArray(int *vetor, int tamanho) {
     printf("\n");
 }
 
+// Função para gerar um array de inteiros aleatórios
+void gerarArrayAleatorio(int arr[], int n) {
+    for (int i = 0; i < n; i++) {
+        arr[i] = rand() % 100000; // Números aleatórios entre 0 e 99.999
+    }
+}
+
 int main() {
+    printf("Iniciando o programa de testes de algoritmos de ordenação.\n");
+
     FILE *file = fopen("resultados.txt", "w");
     if (file == NULL) {
         printf("Erro ao abrir o arquivo!\n");
         return 1;
     }
 
-    int arrBubble[] = {64, 34, 25, 12, 22, 11, 90};
-    int arrMerge[] = {64, 34, 25, 12, 22, 11, 90};
-    int tamanho = sizeof(arrBubble) / sizeof(arrBubble[0]);
+    int tamanhos[] = {100, 1000, 10000, 50000, 100000};
+    int numTamanhos = sizeof(tamanhos) / sizeof(tamanhos[0]);
 
-    clock_t inicio, fim;
-    double tempo_cpu;
+    srand(time(NULL)); // Inicializa a semente para números aleatórios
 
-    // Teste para Bubble Sort
-    inicio = clock();
-    bubbleSort(arrBubble, tamanho);
-    fim = clock();
-    tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
-    fprintf(file, "Bubble Sort: %f\n", tempo_cpu);
-    printf("Array ordenado com Bubble Sort: ");
-    printArray(arrBubble, tamanho);
+    for (int t = 0; t < numTamanhos; t++) {
+        int n = tamanhos[t];
 
-    // Teste para Merge Sort
-    inicio = clock();
-    mergeSort(arrMerge, tamanho);
-    fim = clock();
-    tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
-    fprintf(file, "Merge Sort: %f\n", tempo_cpu);
-    printf("Array ordenado com Merge Sort: ");
-    printArray(arrMerge, tamanho);
+        int *arr = (int *)malloc(n * sizeof(int));
+        if (arr == NULL) {
+            printf("Erro ao alocar memória!\n");
+            return 1;
+        }
+
+        gerarArrayAleatorio(arr, n);
+
+        int *arrBubble = (int *)malloc(n * sizeof(int));
+        int *arrMerge = (int *)malloc(n * sizeof(int));
+        int *arrSelection = (int *)malloc(n * sizeof(int));
+        int *arrInsertion = (int *)malloc(n * sizeof(int));
+        int *arrHeap = (int *)malloc(n * sizeof(int));
+        int *arrQuick = (int *)malloc(n * sizeof(int));
+
+        // Bubble Sort
+        clock_t inicio = clock();
+        bubbleSort(arrBubble, n);
+        clock_t fim = clock();
+        double tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+        printf("Bubble Sort concluído em %f segundos.\n", tempo_cpu);
+        fprintf(file, "Bubble Sort: %f \n", tempo_cpu);
+
+        // Merge Sort
+        inicio = clock();
+        mergeSort(arrMerge, n);
+        fim = clock();
+        tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+        printf("Merge Sort concluído em %f segundos.\n", tempo_cpu);
+        fprintf(file, "Merge Sort: %f\n", tempo_cpu);
+
+        // Selection Sort
+        inicio = clock();
+        selectionSort(arrSelection, n);
+        fim = clock();
+        tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+        printf("Selection Sort concluído em %f segundos.\n", tempo_cpu);
+        fprintf(file, "Selection Sort: %f\n", tempo_cpu);
+
+        // Insertion Sort
+        inicio = clock();
+        insertionSort(arrInsertion, n);
+        fim = clock();
+        tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+        printf("Insertion Sort concluído em %f segundos.\n", tempo_cpu);
+        fprintf(file, "Insertion Sort: %f\n", tempo_cpu);
+
+        // Heap Sort
+        inicio = clock();
+        heapSort(arrHeap, n);
+        fim = clock();
+        tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+        printf("Heap Sort concluído em %f segundos.\n", tempo_cpu);
+        fprintf(file, "Heap Sort: %f\n", tempo_cpu);
+
+        // Quick Sort
+        inicio = clock();
+        quicksort(arrQuick, 0, n - 1);
+        fim = clock();
+        tempo_cpu = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+        printf("Quick Sort concluído em %f segundos.\n", tempo_cpu);
+        fprintf(file, "Quick Sort: %f\n", tempo_cpu);
+
+        fprintf(file, "\n");
+
+        free(arr);
+        free(arrBubble);
+        free(arrMerge);
+        free(arrSelection);
+        free(arrInsertion);
+        free(arrHeap);
+        free(arrQuick);
+    }
 
     fclose(file);
+    printf("Programa concluído. Resultados salvos em 'resultados.txt'.\n");
     return 0;
 }
+
+// Funções de ordenação
 
 void merge(int *vetor, int tamanho) {
     int meio = tamanho / 2;
@@ -122,5 +195,60 @@ void insertionSort(int arr[], int n) {
             j = j - 1;
         }
         arr[j + 1] = key;
+    }
+}
+
+void swap(int *x, int *y) {
+    int temp = *x;
+    *x = *y;
+    *y = temp;
+}
+
+void heapify(int arr[], int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
+
+    if (largest != i) {
+        swap(&arr[i], &arr[largest]);
+        heapify(arr, n, largest);
+    }
+}
+
+void heapSort(int arr[], int n) {
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+
+    for (int i = n - 1; i >= 1; i--) {
+        swap(&arr[0], &arr[i]);
+        heapify(arr, i, 0);
+    }
+}
+
+int particiona(int arr[], int inicio, int fim) {
+    int pivo = arr[fim];
+    int i = inicio - 1;
+
+    for (int j = inicio; j < fim; j++) {
+        if (arr[j] <= pivo) {
+            i++;
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    swap(&arr[i + 1], &arr[fim]);
+    return i + 1;
+}
+
+void quicksort(int arr[], int inicio, int fim) {
+    if (inicio < fim) {
+        int posicaoPivo = particiona(arr, inicio, fim);
+        quicksort(arr, inicio, posicaoPivo - 1);
+        quicksort(arr, posicaoPivo + 1, fim);
     }
 }
