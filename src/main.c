@@ -17,10 +17,9 @@ void printArray(int *vetor, int tamanho) {
     printf("\n");
 }
 
-// Função para gerar um array de inteiros aleatórios
 void gerarArrayAleatorio(int arr[], int n) {
     for (int i = 0; i < n; i++) {
-        arr[i] = rand() % 100000; // Números aleatórios entre 0 e 99.999
+        arr[i] = rand() % 100000;
     }
 }
 
@@ -36,7 +35,7 @@ int main() {
     int tamanhos[] = {100, 1000, 10000, 50000, 100000};
     int numTamanhos = sizeof(tamanhos) / sizeof(tamanhos[0]);
 
-    srand(time(NULL)); // Inicializa a semente para números aleatórios
+    srand(time(NULL));
 
     for (int t = 0; t < numTamanhos; t++) {
         int n = tamanhos[t];
